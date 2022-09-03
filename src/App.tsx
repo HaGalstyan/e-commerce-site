@@ -1,26 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { ICategoryItem } from "./components/categoryItem/CategoryItem";
+import Directory from "./components/directory/Directory";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const categories: ICategoryItem[] = [
+    {
+      id: "1",
+      title: "Hats",
+      imageURL: "https://i.ibb.co/cvpntL1/hats.png",
+    },
+    {
+      id: "2",
+      title: "Jackets",
+      imageURL: "https://i.ibb.co/px2tCc3/jackets.png",
+    },
+    {
+      id: "3",
+      title: "Sneakers",
+      imageURL: "https://i.ibb.co/0jqHpnp/sneakers.png",
+    },
+    {
+      id: "4",
+      title: "Womens",
+      imageURL: "https://i.ibb.co/GCCdy8t/womens.png",
+    },
+    {
+      id: "5",
+      title: "Mens",
+      imageURL: "https://i.ibb.co/R70vBrQ/mens.png",
+    },
+  ];
+
+  return <Directory categories={categories} />;
 }
 
 export default App;
