@@ -4,9 +4,11 @@ import {
   signInWithRedirect,
   signInWithPopup,
   GoogleAuthProvider,
+  createUserWithEmailAndPassword,
   CustomParameters,
   User,
   UserCredential,
+  Auth,
 } from "firebase/auth";
 import {
   getFirestore,
@@ -17,6 +19,7 @@ import {
   DocumentReference,
   DocumentData,
   DocumentSnapshot,
+  WithFieldValue,
 } from "firebase/firestore";
 
 // Firebase configs provided from Firebase
@@ -33,25 +36,33 @@ const firebaseConfig: FirebaseOptions = {
 const firebaseApp: FirebaseApp = initializeApp(firebaseConfig);
 
 // Creating Google auth provider
-const provider: GoogleAuthProvider = new GoogleAuthProvider();
+const googleProvider: GoogleAuthProvider = new GoogleAuthProvider();
 
 // Adding custom parameters
-provider.setCustomParameters({
+googleProvider.setCustomParameters({
   prompt: "select_account",
 } as CustomParameters);
 
 // Getting Auth instansce
-export const auth = getAuth();
+export const auth: Auth = getAuth();
 
 // Creating Google Popup signin func
 export const signInWithGooglePopup: () => Promise<UserCredential> = () => {
-  return signInWithPopup(auth, provider);
+  return signInWithPopup(auth, googleProvider);
+};
+export const signInWithGoogleRedirect: () => Promise<never> = () => {
+  return signInWithRedirect(auth, googleProvider);
 };
 
 export const db: Firestore = getFirestore();
 
 // Returning reference to doc and if user doesn't exists adding him into DB
-export const createUserDocumentFromAuth = async (userAuth: User) => {
+export const createUserDocumentFromAuth = async (
+  userAuth: User,
+  additionalInformation?: WithFieldValue<DocumentData>
+) => {
+  if (!userAuth) return;
+
   // Getting reference to document with absolute path 'users' and userID
   const userDocRef: DocumentReference<DocumentData> = doc(
     db,
@@ -69,11 +80,12 @@ export const createUserDocumentFromAuth = async (userAuth: User) => {
     const createdAt = new Date();
 
     try {
-      //Setting new user
+      //Setting new user passing document ref and new user data
       await setDoc(userDocRef, {
         displayName,
         email,
         createdAt,
+        ...additionalInformation,
       });
     } catch (error) {
       console.log("Error creating new user", error);
@@ -81,4 +93,13 @@ export const createUserDocumentFromAuth = async (userAuth: User) => {
   }
 
   return userDocRef;
+};
+
+export const createAuthUserWithEmailAndPassword = async (
+  email: string,
+  password: string
+) => {
+  if (!email || !password) return;
+
+  return await createUserWithEmailAndPassword(auth, email, password);
 };
