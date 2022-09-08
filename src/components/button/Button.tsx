@@ -18,11 +18,18 @@ interface IButtonComponent {
   children: any;
   buttonType: BUTTON_TYPE;
   buttonProps: IButton;
+  onClick?: () => void;
 }
 
-const Button = ({ children, buttonType, buttonProps }: IButtonComponent) => {
+const Button = ({
+  children,
+  buttonType,
+  buttonProps,
+  onClick,
+}: IButtonComponent) => {
   return (
     <button
+      onClick={onClick}
       className={`button-container ${BUTTON_TYPE_CLASSES[buttonType]}`}
       {...buttonProps}
     >
