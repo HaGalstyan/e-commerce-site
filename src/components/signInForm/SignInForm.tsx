@@ -1,5 +1,5 @@
 import { UserCredential } from "firebase/auth";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import {
   createUserDocumentFromAuth,
   signInAuthUserWithEmailAndPassword,
@@ -7,6 +7,7 @@ import {
 } from "../../utils/firebase/firebase";
 import Button, { BUTTON_TYPE } from "../button/Button";
 import FormInput from "./formInput/FormInput";
+import { IUserContext, UserContext } from "../../contexts/UserProvider";
 
 export interface ISignInFormFields {
   email: string;
@@ -21,7 +22,8 @@ const defaultFormFields: ISignInFormFields = {
 const SignInForm = () => {
   const [formFields, setFormFields] =
     useState<ISignInFormFields>(defaultFormFields);
-  const { email, password } = formFields;
+  const { email, password }: ISignInFormFields = formFields;
+  const { setCurrentUser }: IUserContext = useContext(UserContext);
 
   const signInWithGoogle = async () => {
     const { user }: UserCredential = await signInWithGooglePopup();
@@ -44,12 +46,18 @@ const SignInForm = () => {
     try {
       const response: UserCredential | undefined =
         await signInAuthUserWithEmailAndPassword(email, password);
-      console.log(response);
       resetFormFields();
+      if (!response) return;
+
+      const { user } = response;
+      setCurrentUser(user);
     } catch (error: any) {
       if (error.code === "auth/wrong-password") {
         alert("Incorect password for email");
-      } else if (error.code === "auth/user-not-found") {
+      } else if (
+        error.code === "auth/user-not-found" ||
+        error.code === "auth/invalid-email"
+      ) {
         alert("No user associated with this email");
       } else {
         console.log(error);
