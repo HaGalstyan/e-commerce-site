@@ -1,13 +1,11 @@
 import { UserCredential } from "firebase/auth";
-import { useState, useContext } from "react";
+import { useState } from "react";
 import {
-  createUserDocumentFromAuth,
   signInAuthUserWithEmailAndPassword,
   signInWithGooglePopup,
 } from "../../utils/firebase/firebase";
 import Button, { BUTTON_TYPE } from "../button/Button";
 import FormInput from "./formInput/FormInput";
-import { IUserContext, UserContext } from "../../contexts/UserProvider";
 
 export interface ISignInFormFields {
   email: string;
@@ -23,11 +21,9 @@ const SignInForm = () => {
   const [formFields, setFormFields] =
     useState<ISignInFormFields>(defaultFormFields);
   const { email, password }: ISignInFormFields = formFields;
-  const { setCurrentUser }: IUserContext = useContext(UserContext);
 
   const signInWithGoogle = async () => {
-    const { user }: UserCredential = await signInWithGooglePopup();
-    await createUserDocumentFromAuth(user);
+    await signInWithGooglePopup();
   };
 
   const resetFormFields = () => {
@@ -48,9 +44,6 @@ const SignInForm = () => {
         await signInAuthUserWithEmailAndPassword(email, password);
       resetFormFields();
       if (!response) return;
-
-      const { user } = response;
-      setCurrentUser(user);
     } catch (error: any) {
       if (error.code === "auth/wrong-password") {
         alert("Incorect password for email");
