@@ -1,6 +1,7 @@
 @import "../routes/navigation/navigation.scss";
 @import "../routes/authentication/authentication.scss";
 @import "../routes/shop/shop.scss";
+@import "../routes/checkout/checkout.scss";
 
 @import "../components/directory/directory.scss";
 @import "../components/categoryItem/category.scss";
@@ -12,3 +13,4 @@
 @import "../components/cartIcon/cartIcon.scss";
 @import "../components/cartDropdown/cartDropdown.scss";
 @import "../components/carItem/cartItem.scss";
+@import "../components/checkoutItem/checkoutItem.scss";
