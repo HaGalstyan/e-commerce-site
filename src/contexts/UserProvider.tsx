@@ -16,7 +16,7 @@ import {
 type TUser = User | null;
 
 interface IUserProvider {
-  children: any;
+  children: JSX.Element;
 }
 export interface IUserContext {
   currentUser: TUser;
