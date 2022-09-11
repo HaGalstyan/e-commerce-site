@@ -6,7 +6,7 @@ interface IProductsProvider {
   children: JSX.Element;
 }
 
-interface IProductsContex {
+export interface IProductsContex {
   products: IProduct[] | [];
 }
 

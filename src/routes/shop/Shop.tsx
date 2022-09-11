@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import ProductCard from "../../components/productCard/ProductCard";
-import { ProductsContex } from "../../contexts/ProductsProvider";
+import { ProductsContex } from "../../contexts/ProductsContext";
 
 export interface IProduct {
   id: number;
