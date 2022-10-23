@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import ProductCard from "../../components/productCard/ProductCard";
-import { ProductsContex } from "../../contexts/ProductsContext";
+import CategoryPreview from "../../components/categoryPreview/CategoryPreview";
+import { CategoryContext } from "../../contexts/CategoriesContext";
 
 export interface IProduct {
   id: number;
@@ -10,13 +10,17 @@ export interface IProduct {
 }
 
 const Shop = () => {
-  const { products } = useContext(ProductsContex);
+  const { categoriesMap } = useContext(CategoryContext);
+  if (!categoriesMap) return null;
 
   return (
-    <div className="products-container">
-      {products.map((product: IProduct) => (
-        <ProductCard product={product} key={product.id} />
-      ))}
+    <div className="shop-container">
+      {Object.keys(categoriesMap).map((title, index) => {
+        const products = categoriesMap[title];
+        return (
+          <CategoryPreview key={title} products={products} title={title} />
+        );
+      })}
     </div>
   );
 };

@@ -24,6 +24,15 @@ import {
   DocumentData,
   DocumentSnapshot,
   WithFieldValue,
+  collection,
+  writeBatch,
+  CollectionReference,
+  WriteBatch,
+  query,
+  getDocs,
+  QuerySnapshot,
+  Query,
+  QueryDocumentSnapshot,
 } from "firebase/firestore";
 
 // Firebase configs provided from Firebase
@@ -47,18 +56,59 @@ googleProvider.setCustomParameters({
   prompt: "select_account",
 } as CustomParameters);
 
-// Getting Auth instansce
+// Getting Auth instance
 export const auth: Auth = getAuth();
 
-// Creating Google Popup signin func
+// Creating Google Popup signIn func
 export const signInWithGooglePopup: () => Promise<UserCredential> = () => {
   return signInWithPopup(auth, googleProvider);
 };
+
+// Creating Google Redirect signIn func
 export const signInWithGoogleRedirect: () => Promise<never> = () => {
   return signInWithRedirect(auth, googleProvider);
 };
 
+// The Firestore instance of the provided app.
 export const db: Firestore = getFirestore();
+
+// Create Collection with documents at once
+export const addCollectionAndDocuments = async (
+  collectionKey: string,
+  objectsToAdd: Record<string, any>[],
+  field: string = "title"
+) => {
+  const batch: WriteBatch = writeBatch(db);
+  const collectionRef: CollectionReference = collection(db, collectionKey);
+
+  objectsToAdd.forEach((object) => {
+    const docRef: DocumentReference = doc(
+      collectionRef,
+      object[field].toLowerCase()
+    );
+    batch.set(docRef, object);
+  });
+
+  await batch.commit();
+  console.log("done");
+};
+
+export const getCategoryAndDocuments = async () => {
+  const collectionRef: CollectionReference = collection(db, "catagories");
+  const q: Query = query(collectionRef);
+
+  const querySnapshot: QuerySnapshot = await getDocs(q);
+  const categoryMap = querySnapshot.docs.reduce(
+    (acc: any, docSnapshot: QueryDocumentSnapshot) => {
+      const { title, items } = docSnapshot.data();
+      acc[title.toLowerCase()] = items;
+      return acc;
+    },
+    {}
+  );
+
+  return categoryMap;
+};
 
 // Returning reference to doc and if user doesn't exists adding him into DB
 export const createUserDocumentFromAuth = async (
@@ -67,15 +117,11 @@ export const createUserDocumentFromAuth = async (
 ) => {
   if (!userAuth) return;
 
-  // Getting reference to document with absolute path 'users' and userID
-  const userDocRef: DocumentReference<DocumentData> = doc(
-    db,
-    "users",
-    userAuth.uid
-  );
+  // Gets a 'DocumentReference' instance that refers to the document at the specified absolute path
+  const userDocRef: DocumentReference = doc(db, "users", userAuth.uid);
 
   // Reading document referenced by userDocRef
-  const userSnapshot: DocumentSnapshot<DocumentData> = await getDoc(userDocRef);
+  const userSnapshot: DocumentSnapshot = await getDoc(userDocRef);
 
   // Checking does user exist
   // If user doesn't exist creating user

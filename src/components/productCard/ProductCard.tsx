@@ -3,11 +3,11 @@ import { CartContext } from "../../contexts/CartContext";
 import { IProduct } from "../../routes/shop/Shop";
 import Button, { BUTTON_TYPE } from "../button/Button";
 
-interface IPRoductCard {
+interface IProductCard {
   product: IProduct;
 }
 
-const ProductCard = ({ product }: IPRoductCard) => {
+const ProductCard = ({ product }: IProductCard) => {
   const { imageUrl, name, price }: IProduct = product;
   const { addItemToCart } = useContext(CartContext);
 
